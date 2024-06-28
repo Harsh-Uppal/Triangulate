@@ -1,19 +1,22 @@
 ﻿<!DOCTYPE html>
 <html lang>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Triangular Mesh Generation</title>
-    <style> body {padding: 0; margin: 0;} </style>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js"></script>
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js"></script>
     <script src="sketch.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Mesh Triangulation</h1>
+    <h1>Triangulate</h1>
     <div class="content">
       <div class="properties">
         <div class="property">
@@ -21,11 +24,9 @@
             <h2>Vertices</h2>
           </div>
           <div class="property-list" type="v">
-            <div id="v0" class="vertex" style="display: none;" visible="false">
-              { x: <input name="x" type="text"
-                data-type="number">, y:
-              <input name="y" type="text"
-                data-type="number">}
+            <div id="v0" class="vertex" style="display: none" visible="false">
+              { x: <input name="x" type="text" data-type="number" />, y:
+              <input name="y" type="text" data-type="number" />}
             </div>
             <span class="empty">Define a Vertex</span>
           </div>
@@ -35,12 +36,10 @@
             <h2>Edges</h2>
           </div>
           <div class="property-list" type="e">
-            <div id="e0" class="edge" style="display: none;">
-              Points: [ <select name="v0">
-                <option value="0">V0</option>
-              </select>, <select name="v1">
-                <option value="0">V0</option>
-              </select>]
+            <div id="e0" class="edge" style="display: none">
+              Points: [ V<input name="v0" type="text" data-type="number" />,
+              V<input name="v1" type="text" data-type="number" />
+              ]
             </div>
             <span class="empty">Define an Edge</span>
           </div>
@@ -50,8 +49,10 @@
         <select name="mode" id="modeSelect" class="mode">
           <option value="v">Define Vertices</option>
           <option value="e">Define Edges</option>
+          <option value="x">Erase</option>
           <option value="t">Triangulate</option>
         </select>
+        <span name="log" id="logger" class="log"></span>
       </main>
     </div>
   </body>

@@ -1,105 +1,131 @@
 :root {
-    --v: calc((1vw + 1vh) / 2)
+  --v: calc((1vw + 1vh) / 2);
 }
 
 * {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
 h1 {
-    display: grid;
-    width: 100vw;
-    font-size: calc(3 * var(--v));
-    height: 10vh;
-    text-align: center;
-    place-items: center;
+  display: grid;
+  width: 100vw;
+  font-size: calc(3 * var(--v));
+  height: 10vh;
+  text-align: center;
+  place-items: center;
 }
 
 h2 {
-    padding-block: var(--v);
+  padding-block: var(--v);
 }
 
 input:focus,
 button:focus,
 select:focus {
-    outline: none;
+  outline: none;
 }
 
 button {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .content {
-    display: flex;
-    flex-grow: 1;
-    height: 95vh;
-    justify-content: space-evenly;
+  display: flex;
+  flex-grow: 1;
+  height: 95vh;
+  justify-content: space-evenly;
 }
 
 .properties {
-    border: 1px solid white;
-    background-color: rgb(48, 48, 48);
-    padding-inline: calc(2 * var(--v));
-    border-radius: var(--v);
-    height: 85vh;
-    width: 17vw;
+  border: 1px solid white;
+  background-color: rgb(48, 48, 48);
+  padding-inline: calc(2 * var(--v));
+  border-radius: var(--v);
+  height: 85vh;
+  width: 17vw;
 }
 
 .property-label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .property-list {
-    min-height: 20vh;
+  position: relative;
+  min-height: 20vh;
 }
 
 .empty {
-    display: block;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.empty:has(+div[visible="true"]) {
-    display: none;
+.empty:has(+ div[visible="true"]) {
+  display: none;
 }
 
-.property-list>* {
-    padding-bottom: calc(0.7 * var(--v));
+.property-list > * {
+  padding-bottom: calc(0.7 * var(--v));
 }
 
 .add-btn {
-    display: grid;
-    place-content: center;
-    width: calc(3.5 * var(--v));
-    height: calc(3.5 * var(--v));
-    border-radius: var(--v);
-    border: 1px solid white;
-    transition: .3s;
+  display: grid;
+  place-content: center;
+  width: calc(3.5 * var(--v));
+  height: calc(3.5 * var(--v));
+  border-radius: var(--v);
+  border: 1px solid white;
+  transition: 0.3s;
 }
 
 .add-btn:hover {
-    border-color: cyan;
+  border-color: cyan;
 }
 
 .property input,
 .property select {
-    border: none;
-    border-bottom: 1px solid white;
-    width: 2.3rem;
+  border: none;
+  border-bottom: 0.1px solid #bbb;
+  width: 2.3rem;
+  font-size: calc(var(--v) * 1.2);
 }
 
 main {
-    position: relative;
+  position: relative;
 }
 
 .mode {
-    position: absolute;
-    top: calc(var(--v));
-    left: calc(var(--v));
-    padding: calc(.5 * var(--v));
+  position: absolute;
+  top: calc(var(--v));
+  left: calc(var(--v));
+  padding: calc(0.5 * var(--v));
+}
+
+.log {
+  position: absolute;
+  top: calc(var(--v));
+  right: calc(var(--v));
+  background: none;
+  width: 20rem;
+  border: none;
+  outline: none !important;
+  user-select: none;
+  color: lime;
+}
+
+.log:empty {
+  display: none;
 }
 
 canvas {
-    border-radius: var(--v);
+  border-radius: var(--v);
+}
+
+.red {
+  color: red;
 }
