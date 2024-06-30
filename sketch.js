@@ -210,7 +210,6 @@ function triangulate(mesh) {
   return triangles;
 }
 
-//SN
 function eraseElements(p0, p1) {
   let vDel, eDel, v0, v1, a1, b1, c1, a2, b2, c2, d, x, y;
 
@@ -223,6 +222,7 @@ function eraseElements(p0, p1) {
         (VERTEX_SIZE + ERASER_SIZE) * (VERTEX_SIZE + ERASER_SIZE);
 
     if (vDel) {
+      if (selectedVertex.index == index) selectedVertex = null;
       removeProperty("v", index);
       return true;
     }
@@ -264,7 +264,6 @@ function eraseElements(p0, p1) {
   });
 }
 
-//SN
 function add_edge(v0, v1) {
   if ((v0.edges && v0.edges.length > 1) || (v1.edges && v1.edges.length > 1)) {
     loggg(
@@ -326,7 +325,6 @@ function drawVertices(filled = false) {
   }
 }
 
-//SN
 function drawEdges() {
   stroke(EDGE_COLOR);
 
