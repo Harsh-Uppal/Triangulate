@@ -2,7 +2,7 @@
 
 let propertyElements,
   propertyLists = {};
-let data = { v: [], e: [], t: [] };
+let data = { v: [], t: [] };
 let mode, logger;
 let selectedVertex = null;
 let eraser = {
@@ -57,7 +57,14 @@ function addProperty(dataType, values = {}, objectProperties = {}) {
     input = elem.children[i];
     if (input.nodeName !== "INPUT" && input.nodeName !== "SELECT") continue;
 
-    input.value = values[input.name];
+    input.value = values[input.name] || input.value;
+
+    if (input.getAttribute("data-type") == "int")
+      input.addEventListener("input", () => {
+        input.value = input.value.split(".")[0];
+      });
+
+    input.dispatchEvent(new Event("input"));
     property[input.name] = input;
   }
 
@@ -92,7 +99,7 @@ function setup() {
   });
   canvas.addEventListener("mouseup", () => (mousedown = false));
 
-  dev_setup();
+  // dev_setup();
 
   noLoop();
 }
@@ -203,69 +210,62 @@ function triangulate(mesh) {
   return triangles;
 }
 
+//SN
 function eraseElements(p0, p1) {
-  if (p1) {
-    data.v.forEach((v, index) => {
-      if (isTouchingLine({ x: v.x.value, y: v.y.value }, p0, p1, VERTEX_SIZE)) {
-        removeProperty("v", index);
-        return true;
-      }
-    });
-
-    data.e.forEach((e, index) => {
-      let v0 = { x: e.vObj0.x.value, y: e.vObj0.y.value };
-      let v1 = { x: e.vObj1.x.value, y: e.vObj1.y.value };
-
-      let a1 = v1.y - v0.y;
-      let b1 = v0.x - v1.x;
-      let c1 = a1 * v0.x + b1 * v0.y;
-
-      // Line CD represented as a2x + b2y = c2
-      let a2 = p1.y - p0.y;
-      let b2 = p0.x - p1.x;
-      let c2 = a2 * p0.x + b2 * p0.y;
-
-      let d = a1 * b2 - a2 * b1;
-
-      if (d != 0) {
-        let x = (b2 * c1 - b1 * c2) / d;
-        var y = (a1 * c2 - a2 * c1) / d;
-
-        if (
-          x > Math.max(Math.min(v0.x, v1.x), Math.min(p0.x, p1.x)) &&
-          y > Math.max(Math.min(v0.y, v1.y), Math.min(p0.y, p1.y)) &&
-          x < Math.min(Math.max(v0.x, v1.x), Math.max(p0.x, p1.x)) &&
-          y < Math.min(Math.max(v0.y, v1.y), Math.max(p0.y, p1.y))
-        )
-          delete data.e[index];
-      }
-    });
-
-    return;
-  }
+  let vDel, eDel, v0, v1, a1, b1, c1, a2, b2, c2, d, x, y;
 
   data.v.forEach((v, index) => {
-    if (
-      (v.x.value - p0.x) * (v.x.value - p0.x) +
-        (v.y.value - p0.y) * (v.y.value - p0.y) <
-      (VERTEX_SIZE + ERASER_SIZE) * (VERTEX_SIZE + ERASER_SIZE)
-    ) {
+    v0 = { x: v.x.value, y: v.y.value };
+
+    vDel = p1
+      ? isTouchingLine(v0, p0, p1, VERTEX_SIZE)
+      : (v0.x - p0.x) * (v0.x - p0.x) + (v0.y - p0.y) * (v0.y - p0.y) <
+        (VERTEX_SIZE + ERASER_SIZE) * (VERTEX_SIZE + ERASER_SIZE);
+
+    if (vDel) {
       removeProperty("v", index);
       return true;
     }
-  });
 
-  data.e.forEach((e, index) => {
-    let v0 = { x: e.vObj0.x.value, y: e.vObj0.y.value };
-    let v1 = { x: e.vObj1.x.value, y: e.vObj1.y.value };
+    if (v.edges)
+      v.edges.forEach((e, i) => {
+        v1 = { x: e.x.value, y: e.y.value };
 
-    if (isTouchingLine(p0, v0, v1, ERASER_SIZE)) delete data.e[index];
+        if (p1) {
+          a1 = v1.y - v0.y;
+          b1 = v0.x - v1.x;
+          c1 = a1 * v0.x + b1 * v0.y;
+
+          // Line CD represented as a2x + b2y = c2
+          a2 = p1.y - p0.y;
+          b2 = p0.x - p1.x;
+          c2 = a2 * p0.x + b2 * p0.y;
+
+          d = a1 * b2 - a2 * b1;
+
+          if (d != 0) {
+            x = (b2 * c1 - b1 * c2) / d;
+            y = (a1 * c2 - a2 * c1) / d;
+
+            eDel =
+              x > Math.max(Math.min(v0.x, v1.x), Math.min(p0.x, p1.x)) &&
+              y > Math.max(Math.min(v0.y, v1.y), Math.min(p0.y, p1.y)) &&
+              x < Math.min(Math.max(v0.x, v1.x), Math.max(p0.x, p1.x)) &&
+              y < Math.min(Math.max(v0.y, v1.y), Math.max(p0.y, p1.y));
+          }
+        } else eDel = isTouchingLine(p0, v0, v1, ERASER_SIZE);
+
+        if (eDel) {
+          //Delete edge
+          e.edges.splice(e.edges.indexOf(v), 1);
+          v.edges.splice(i, 1);
+        }
+      });
   });
 }
 
+//SN
 function add_edge(v0, v1) {
-  let createEdge = true;
-
   if ((v0.edges && v0.edges.length > 1) || (v1.edges && v1.edges.length > 1)) {
     loggg(
       "There are already 2 edges connected to either v0 or v1",
@@ -276,27 +276,13 @@ function add_edge(v0, v1) {
     return;
   }
 
-  data.e.forEach((e) => {
-    if ((e.vObj0 == v1 && e.vObj1 == v0) || (e.vObj0 == v0 && e.vObj1 == v1)) {
-      //Error : Edge already defined
-      createEdge = false;
-      return true;
-    }
-  });
+  if (v0.edges && v0.edges.indexOf(v1) != -1) return;
 
-  if (createEdge) {
-    const e = addProperty(
-      "e",
-      { v0: v0.index, v1: v1.index },
-      { vObj0: v0, vObj1: v1 }
-    );
+  if (!v0.edges) v0.edges = [];
+  if (!v1.edges) v1.edges = [];
 
-    if (!v0.edges) v0.edges = [];
-    if (!v1.edges) v1.edges = [];
-
-    v0.edges.push(e);
-    v1.edges.push(e);
-  }
+  v0.edges.push(v1);
+  v1.edges.push(v0);
 }
 
 //---------------------------Drawing---------------------------//
@@ -340,16 +326,15 @@ function drawVertices(filled = false) {
   }
 }
 
+//SN
 function drawEdges() {
   stroke(EDGE_COLOR);
 
-  let v0, v1;
-  data.e.forEach((e) => {
-    v0 = e.vObj0;
-    v1 = e.vObj1;
-
-    line(v0.x.value, v0.y.value, v1.x.value, v1.y.value);
-  });
+  data.v.forEach(
+    (v) =>
+      v.edges &&
+      v.edges.forEach((e) => line(v.x.value, v.y.value, e.x.value, e.y.value))
+  );
 }
 
 function drawTriangles() {
@@ -464,22 +449,12 @@ function generateMesh() {
   mesh[0] = V;
 
   let lV = V;
-  V = V.edges[0].vObj0 == V ? V.edges[0].vObj1 : V.edges[0].vObj0;
+  V = V.edges[0];
   mesh[1] = V;
 
   while (mesh.length != data.v.length) {
-    for (let i = 0; i < 2; i++)
-      if (V.edges[i].vObj0 == V && V.edges[i].vObj1 != lV) {
-        lV = V;
-        V = V.edges[i].vObj1;
-        break;
-      } else if (V.edges[i].vObj0 != lV && V.edges[i].vObj1 == V) {
-        {
-          lV = V;
-          V = V.edges[i].vObj0;
-          break;
-        }
-      }
+    lV = V;
+    V = V.edges[0] == lV ? V.edges[1] : V.edges[0];
 
     mesh.push(V);
   }
@@ -541,16 +516,6 @@ function loggg(text, clear = false, newLine = false, color) {
 //-----------------------Event Handlers-----------------------//
 
 function load() {
-  let inputs = document.getElementsByTagName("input");
-  for (let i = 0; i < inputs.length; i++) {
-    const input = inputs[i];
-    if (input.getAttribute("data-type") == "number")
-      input.addEventListener(
-        "change",
-        () => (input.value = parseFloat(input.value))
-      );
-  }
-
   propertyElements = {
     v: document.getElementById("v0"),
     e: document.getElementById("e0"),
@@ -618,22 +583,11 @@ function onMouseMove() {
   draw();
 }
 
+const modeKeycodes = [69, 84, 86, 88];
 function keyPressed() {
-  switch (keyCode) {
-    case 69:
-      mode.value = "e";
-      break;
-    case 84:
-      mode.value = "t";
-      break;
-    case 86:
-      mode.value = "v";
-      break;
-    case 88:
-      mode.value = "x";
-      break;
-  }
+  if (modeKeycodes.indexOf(keyCode) == -1) return;
 
+  mode.value = char(keyCode).toLowerCase();
   onModeChanged();
 }
 
@@ -655,7 +609,8 @@ function onModeChanged() {
       }
 
       data.t = triangles;
-    } catch {
+    } catch (e) {
+      console.error(e);
       loggg("Triangulation Failed", false, true, "red");
     }
   }

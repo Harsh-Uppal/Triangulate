@@ -43,7 +43,7 @@ button {
   padding-inline: calc(2 * var(--v));
   border-radius: var(--v);
   height: 85vh;
-  width: 17vw;
+  width: 15vw;
 }
 
 .property-label {
@@ -55,6 +55,9 @@ button {
 .property-list {
   position: relative;
   min-height: 20vh;
+  list-style-position: outside;
+  list-style-type: decimal-leading-zero;
+  padding-left: calc(5 * var(--v));
 }
 
 .empty {
@@ -69,7 +72,8 @@ button {
   display: none;
 }
 
-.property-list > * {
+.property-list > div {
+  display: list-item;
   padding-bottom: calc(0.7 * var(--v));
 }
 
