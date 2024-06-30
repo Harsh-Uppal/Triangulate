@@ -229,6 +229,8 @@ function eraseElements(p0, p1) {
           e.edges.splice(e.edges.indexOf(v), 1);
         });
 
+      if (index == selectedVertex.index) selectedVertex = null;
+
       removeProperty("v", index);
       return true;
     }
