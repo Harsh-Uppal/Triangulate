@@ -223,6 +223,12 @@ function eraseElements(p0, p1) {
 
     if (vDel) {
       if (selectedVertex.index == index) selectedVertex = null;
+
+      if (v.edges)
+        v.edges.forEach((e) => {
+          e.edges.splice(e.edges.indexOf(v), 1);
+        });
+
       removeProperty("v", index);
       return true;
     }
