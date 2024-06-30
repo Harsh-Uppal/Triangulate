@@ -452,9 +452,11 @@ function generateMesh() {
   V = V.edges[0];
   mesh[1] = V;
 
+  let e;
   while (mesh.length != data.v.length) {
+    e = V.edges[0] == lV;
     lV = V;
-    V = V.edges[0] == lV ? V.edges[1] : V.edges[0];
+    V = e ? V.edges[1] : V.edges[0];
 
     mesh.push(V);
   }
@@ -472,21 +474,21 @@ function splitMesh(mesh, diag) {
     leastX = Infinity;
     meshes[i] = [];
 
-    const addVtoMesh = (addV = true) => {
+    const addVtoMesh = () => {
       if (mesh[v].x.value < leastX) {
         leastX = mesh[v].x.value;
         leftmostV = meshes[i].length;
       }
 
       meshes[i].push(mesh[v]);
-      if (addV) v = (v + 1) % mesh.length;
     };
 
     do {
       addVtoMesh();
+      v = (v + 1) % mesh.length;
     } while (v != diag[(i + 1) % 2].index);
 
-    addVtoMesh(false);
+    addVtoMesh();
 
     meshes[i].push(...meshes[i].splice(0, leftmostV));
   }
