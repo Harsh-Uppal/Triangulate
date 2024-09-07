@@ -222,14 +222,12 @@ function eraseElements(p0, p1) {
         (VERTEX_SIZE + ERASER_SIZE) * (VERTEX_SIZE + ERASER_SIZE);
 
     if (vDel) {
-      if (selectedVertex.index == index) selectedVertex = null;
+      if (selectedVertex && selectedVertex.x.value == v0.x && selectedVertex.y.value == v0.y) selectedVertex = null;
 
       if (v.edges)
         v.edges.forEach((e) => {
           e.edges.splice(e.edges.indexOf(v), 1);
         });
-
-      if (index == selectedVertex.index) selectedVertex = null;
 
       removeProperty("v", index);
       return true;
